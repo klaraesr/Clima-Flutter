@@ -1,5 +1,19 @@
+import 'dart:convert';
+
+import 'package:clima/screens/location_screen.dart';
+import 'package:clima/services/networking.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:clima/services/location_service.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:http/http.dart';
+import 'package:clima/utilities/api_key.dart';
+
+class WeatherBody {
+  Coordinate coord;
+  String name;
+
+  WeatherBody(this.coord, this.name);
+}
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -7,19 +21,42 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  void getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+  @override
+  void initState() {
+    super.initState();
+    getWeatherData();
+  }
+
+  void getWeatherData() async {
+    Coordinate userCoordinates;
+    try {
+      LocationService location = LocationService();
+      userCoordinates = await location.getUserLocation();
+    } catch (e) {
+      print('Could not get user location. Error $e');
+    }
+    var data = await NetworkHelper(
+            'http://api.openweathermap.org/data/2.5/weather?lat=${userCoordinates.latitude}&lon=${userCoordinates.longitude}&appid=$apiKey')
+        .getData();
+    String description = data['weather'][0]['description'];
+    double temp = data['main']['temp'];
+    print('It is $description and $temp degrees');
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: ((context) => LocationScreen()),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            //Get the current location
-          },
-          child: Text('Get My Location'),
+        child: SpinKitRotatingCircle(
+          color: Colors.white,
+          size: 50.0,
         ),
       ),
     );
