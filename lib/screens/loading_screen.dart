@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:clima/screens/location_screen.dart';
 import 'package:clima/services/networking.dart';
+import 'package:clima/services/weather.dart';
 import 'package:flutter/material.dart';
 import 'package:clima/services/location_service.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -28,24 +29,11 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   void getWeatherData() async {
-    Coordinate userCoordinates;
-    try {
-      LocationService location = LocationService();
-      userCoordinates = await location.getUserLocation();
-    } catch (e) {
-      print('Could not get user location. Error $e');
-    }
-    var data = await NetworkHelper(
-            'http://api.openweathermap.org/data/2.5/weather?lat=${userCoordinates.latitude}&lon=${userCoordinates.longitude}&appid=$apiKey')
-        .getData();
-    String description = data['weather'][0]['description'];
-    double temp = data['main']['temp'];
-    print('It is $description and $temp degrees');
-
+    var data = await WeatherModel().getLocationWeather();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: ((context) => LocationScreen()),
+        builder: ((context) => LocationScreen(locationWeather: data)),
       ),
     );
   }

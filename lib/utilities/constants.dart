@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-const kTempTextStyle = TextStyle(
-  fontFamily: 'Spartan MB',
-  fontSize: 100.0,
+final kTempTextStyle = GoogleFonts.montserrat(
+  color: Color.fromARGB(255, 249, 249, 250),
+  fontSize: 40,
+  fontWeight: FontWeight.w900,
 );
 
 const kMessageTextStyle = TextStyle(

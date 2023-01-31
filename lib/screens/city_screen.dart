@@ -7,15 +7,14 @@ class CityScreen extends StatefulWidget {
 }
 
 class _CityScreenState extends State<CityScreen> {
+  String cityName = '';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/city_background.jpg'),
-            fit: BoxFit.cover,
-          ),
+          color: Color.fromARGB(225, 57, 73, 97),
         ),
         constraints: BoxConstraints.expand(),
         child: SafeArea(
@@ -24,7 +23,9 @@ class _CityScreenState extends State<CityScreen> {
               Align(
                 alignment: Alignment.topLeft,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
                   child: Icon(
                     Icons.arrow_back_ios,
                     size: 50.0,
@@ -33,10 +34,24 @@ class _CityScreenState extends State<CityScreen> {
               ),
               Container(
                 padding: EdgeInsets.all(20.0),
-                child: null,
+                child: TextField(
+                  onChanged: (value) => cityName = value,
+                  decoration: InputDecoration(
+                    hintText: 'Enter city',
+                    filled: true,
+                    icon: Icon(Icons.location_city, color: Colors.white, size: 50.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10.0),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              TextButton(
-                onPressed: () {},
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context, cityName);
+                },
                 child: Text(
                   'Get Weather',
                   style: kButtonTextStyle,

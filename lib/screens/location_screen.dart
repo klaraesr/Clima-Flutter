@@ -1,41 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:clima/utilities/constants.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import '../services/weather.dart';
+import 'city_screen.dart';
 
 class LocationScreen extends StatefulWidget {
+  LocationScreen({this.locationWeather});
+  final locationWeather;
+
   @override
   _LocationScreenState createState() => _LocationScreenState();
 }
 
 class _LocationScreenState extends State<LocationScreen> {
+  WeatherModel weather = WeatherModel();
+  int temperature;
+  String weatherIcon = '';
+  String cityName;
+  String weatherDescription = '';
+
+  @override
+  void initState() {
+    super.initState();
+    setWeatherData(widget.locationWeather);
+    print('Init location screen ${widget.locationWeather}');
+  }
+
+  void setWeatherData(dynamic weatherData) {
+    setState(() {
+      temperature = weatherData['main']['temp'].toInt();
+      int weatherCode = weatherData['weather'][0]['id'];
+      cityName = weatherData['name'];
+      weatherIcon = weather.getWeatherIcon(weatherCode);
+      weatherDescription = weather.getMessage(temperature);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/location_background.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.white.withOpacity(0.8), BlendMode.dstATop),
-          ),
+          color: Color.fromARGB(156, 19, 66, 29),
         ),
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var data = await weather.getLocationWeather();
+                      setWeatherData(data);
+                    },
                     child: Icon(
                       Icons.near_me,
                       size: 50.0,
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      var searchQuery = await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CityScreen()),
+                      );
+                      if (searchQuery != null) {
+                        var data = await weather.getCityWeather(searchQuery);
+                        setWeatherData(data);
+                      } else {
+                        var data = await weather.getLocationWeather();
+                        setWeatherData(data);
+                      }
+                    },
                     child: Icon(
                       Icons.location_city,
                       size: 50.0,
@@ -44,15 +85,22 @@ class _LocationScreenState extends State<LocationScreen> {
                 ],
               ),
               Padding(
-                padding: EdgeInsets.only(left: 15.0),
+                padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 10.0),
                 child: Row(
                   children: <Widget>[
                     Text(
-                      '32°',
-                      style: kTempTextStyle,
+                      '$cityName',
                     ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 15.0),
+                child: Row(
+                  children: <Widget>[
+                    Text('$temperature°', style: kTempTextStyle),
                     Text(
-                      '☀️',
+                      weatherIcon,
                       style: kConditionTextStyle,
                     ),
                   ],
@@ -61,7 +109,7 @@ class _LocationScreenState extends State<LocationScreen> {
               Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
-                  "It's 🍦 time in San Francisco!",
+                  weatherDescription,
                   textAlign: TextAlign.right,
                   style: kMessageTextStyle,
                 ),
