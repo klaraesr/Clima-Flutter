@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../services/weather.dart';
 import 'city_screen.dart';
+import 'package:clima/theme.dart';
 
 class LocationScreen extends StatefulWidget {
   LocationScreen({this.locationWeather});
@@ -42,8 +43,8 @@ class _LocationScreenState extends State<LocationScreen> {
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
-          color: Color.fromARGB(156, 19, 66, 29),
-        ),
+            /* color: Color.fromARGB(156, 19, 66, 29), */
+            ),
         constraints: BoxConstraints.expand(),
         child: SafeArea(
           child: Column(
@@ -98,10 +99,10 @@ class _LocationScreenState extends State<LocationScreen> {
                 padding: EdgeInsets.only(left: 15.0),
                 child: Row(
                   children: <Widget>[
-                    Text('$temperature°', style: kTempTextStyle),
+                    Text('$temperature°', style: Theme.of(context).textTheme.displayLarge),
                     Text(
                       weatherIcon,
-                      style: kConditionTextStyle,
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                   ],
                 ),
@@ -110,8 +111,7 @@ class _LocationScreenState extends State<LocationScreen> {
                 padding: EdgeInsets.only(right: 15.0),
                 child: Text(
                   weatherDescription,
-                  textAlign: TextAlign.right,
-                  style: kMessageTextStyle,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
               ),
             ],
